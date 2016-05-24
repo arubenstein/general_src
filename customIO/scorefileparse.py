@@ -10,7 +10,7 @@ class ScoreFileParseError(Exception):
         Exception.__init__(self,"trouble parsing score file: {0}\n{1}".format(filename,error_msg))
         self.filename = filename
 
-def read_vals(filename, scoretype, repl_orig=False, rmsd=None, list_energies=None, weights=None, scales=None, offsets=None): 
+def read_vals(filename, scoretype, repl_orig=False, rmsd=None, list_energies=None, weights=None, scales=None, offsets=None, trim=True): 
     """Read values from a filename to return a scores_dict of structure { filename : (rmsd, sum(list_energies)) }"""
     if scoretype != "amber" and scoretype != "rosetta":
         error_str="Scoretype must be either amber or rosetta, not " + scoretype
@@ -57,7 +57,7 @@ def read_vals(filename, scoretype, repl_orig=False, rmsd=None, list_energies=Non
     if any(ind > len(line.split()) for ind in indices for line in lines):
         raise ScoreFileParseError(filename, "Broken lines exist") 
     
-    values_dict = extract_data(lines, rmsd_ind, desc_ind, indices, scoretype, weights, scales, offsets, elec14_ind=elec14_ind)
+    values_dict = extract_data(lines, rmsd_ind, desc_ind, indices, scoretype, weights, scales, offsets, elec14_ind=elec14_ind, trim=trim)
 
     if repl_orig:
         values_dict = replace_rmsd_orig(values_dict, filename)
@@ -108,7 +108,7 @@ def filter_pdbs_by_rmsd(pdbs_dict, rmsd_cutoff=50.0):
 
     return new_pdbs_dict
 
-def extract_data(lines, rmsd_ind, desc_ind, indices, scoretype, weights=None, scales=None, offsets=None, elec14_ind=None):
+def extract_data(lines, rmsd_ind, desc_ind, indices, scoretype, weights=None, scales=None, offsets=None, elec14_ind=None, trim=True):
     """Extract data from lines into scores_dict of structure { filename : (rmsd, energy) }"""
     if not weights and not scales and not offsets:
 	weights = [ 1 for i in indices ]
@@ -124,7 +124,13 @@ def extract_data(lines, rmsd_ind, desc_ind, indices, scoretype, weights=None, sc
 	offsets + [scales[0]]
 	indices + [elec14_ind]
 
-    if scoretype == "amber":
+    if not trim:
+        values_dict = {
+            line.split()[desc_ind] :
+            (sum(((float(line.split()[i]) / s + o) * w) for w,i,s,o in zip(weights,indices,scales,offsets)),
+            float(line.split()[rmsd_ind]))
+            for line in lines}
+    elif scoretype == "amber":
         values_dict = {
             line.split()[desc_ind][8:-5]:
             (sum(((float(line.split()[i]) / s + o) * w) for w,i,s,o in zip(weights,indices,scales,offsets)),
