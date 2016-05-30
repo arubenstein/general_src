@@ -50,7 +50,8 @@ def best_of_5(scores_dict):
 def scores_dict_to_metrics(scores_dict):
     temp_fn = "temp_" + ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(4)) + ".txt"
     scorefileparse.write_scores_dict_score_file(scores_dict, temp_fn)
-
+    if not os.path.isfile("~/git_repos/bakerlab_scripts/boinc/score_energy_landscape.py"):
+        raise OSError("disc scoring script not found. please clone bakerlab_script repo and place it in ~/git_repos/")
     output = subprocess.check_output(os.path.expanduser("~/git_repos/bakerlab_scripts/boinc/score_energy_landscape.py -abinitio_scorefile {0}".format(temp_fn)), shell=True)
     lines = output.splitlines()
     metr_tr = { "PNear" : "PNear", "SampledRMS" : "SRMS" , "WeightedRMS" : "WRMS", "tyka_discrimination.py" : "Disc", "calcbinnedboltz.pl" : "BinBoltz" }
