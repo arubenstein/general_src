@@ -51,7 +51,7 @@ def scores_dict_to_metrics(scores_dict):
     temp_fn = "temp_" + ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(4)) + ".txt"
     scorefileparse.write_scores_dict_score_file(scores_dict, temp_fn)
 
-    output = subprocess.check_output("/Users/arubenstein/Dropbox/Research/Khare/Scripts//bakerlab_scripts/boinc/score_energy_landscape.py -abinitio_scorefile {0}".format(temp_fn), shell=True)
+    output = subprocess.check_output(os.path.expanduser("~/git_repos/bakerlab_scripts/boinc/score_energy_landscape.py -abinitio_scorefile {0}".format(temp_fn)), shell=True)
     lines = output.splitlines()
     metr_tr = { "PNear" : "PNear", "SampledRMS" : "SRMS" , "WeightedRMS" : "WRMS", "tyka_discrimination.py" : "Disc", "calcbinnedboltz.pl" : "BinBoltz" }
     metrics = { metr_tr[token] : float(lines[1].split()[ind]) for ind,token in enumerate(lines[0].split()) }
