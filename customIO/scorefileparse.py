@@ -10,7 +10,7 @@ class ScoreFileParseError(Exception):
         Exception.__init__(self,"trouble parsing score file: {0}\n{1}".format(filename,error_msg))
         self.filename = filename
 
-def read_vals(filename, scoretype, repl_orig=False, rmsd=None, list_energies=None, weights=None, scales=None, offsets=None): 
+def read_vals(filename, scoretype, repl_orig=False, rmsd=None, list_energies=None, weights=None, scales=None, offsets=None, trim=True): 
     """Read values from a filename to return a scores_dict of structure { filename : (rmsd, sum(list_energies)) }"""
     if scoretype != "amber" and scoretype != "rosetta":
         error_str="Scoretype must be either amber or rosetta, not " + scoretype
@@ -57,7 +57,7 @@ def read_vals(filename, scoretype, repl_orig=False, rmsd=None, list_energies=Non
     if any(ind > len(line.split()) for ind in indices for line in lines):
         raise ScoreFileParseError(filename, "Broken lines exist") 
     
-    values_dict = extract_data(lines, rmsd_ind, desc_ind, indices, scoretype, weights, scales, offsets, elec14_ind=elec14_ind)
+    values_dict = extract_data(lines, rmsd_ind, desc_ind, indices, scoretype, weights, scales, offsets, elec14_ind=elec14_ind, trim=trim)
 
     if repl_orig:
         values_dict = replace_rmsd_orig(values_dict, filename)
@@ -96,7 +96,7 @@ def replace_rmsd_orig(scores_dict, filename):
 
 def filter_scores_by_rmsd(scores_dict, rmsd_cutoff=50.0):
     """Filter scores in the scores_dict by given rmsd_cutoff"""
-    new_dict = { filename : (val[0], val[1]) for filename, val in scores_dict.items() if val[1] < rmsd_cutoff }
+    new_dict = dict((filename,(val[0], val[1])) for filename, val in scores_dict.items() if val[1] < rmsd_cutoff )
     return new_dict
 
 def filter_pdbs_by_rmsd(pdbs_dict, rmsd_cutoff=50.0):
@@ -108,7 +108,7 @@ def filter_pdbs_by_rmsd(pdbs_dict, rmsd_cutoff=50.0):
 
     return new_pdbs_dict
 
-def extract_data(lines, rmsd_ind, desc_ind, indices, scoretype, weights=None, scales=None, offsets=None, elec14_ind=None):
+def extract_data(lines, rmsd_ind, desc_ind, indices, scoretype, weights=None, scales=None, offsets=None, elec14_ind=None, trim=True):
     """Extract data from lines into scores_dict of structure { filename : (rmsd, energy) }"""
     if not weights and not scales and not offsets:
 	weights = [ 1 for i in indices ]
@@ -124,18 +124,24 @@ def extract_data(lines, rmsd_ind, desc_ind, indices, scoretype, weights=None, sc
 	offsets + [scales[0]]
 	indices + [elec14_ind]
 
-    if scoretype == "amber":
-        values_dict = {
-            line.split()[desc_ind][8:-5]:
+    if not trim:
+        values_dict = dict((
+            line.split()[desc_ind],
             (sum(((float(line.split()[i]) / s + o) * w) for w,i,s,o in zip(weights,indices,scales,offsets)),
-            float(line.split()[rmsd_ind]))
-            for line in lines}
+            float(line.split()[rmsd_ind])))
+            for line in lines)
+    elif scoretype == "amber":
+        values_dict = dict((
+            line.split()[desc_ind][8:-5],
+            (sum(((float(line.split()[i]) / s + o) * w) for w,i,s,o in zip(weights,indices,scales,offsets)),
+            float(line.split()[rmsd_ind])))
+            for line in lines)
     else:
-        values_dict = {
-            line.split()[desc_ind][0:-5]:
+        values_dict = dict((
+            line.split()[desc_ind][0:-5],
             (sum(((float(line.split()[i]) / s + o) * w) for w,i,s,o in zip(weights,indices,scales,offsets)),
-            float(line.split()[rmsd_ind])) 
-            for line in lines}
+            float(line.split()[rmsd_ind]))) 
+            for line in lines)
 #    except ValueError as e:
 #        raise ScoreFileParseError(filename, str(e))
 
@@ -171,7 +177,7 @@ def scores_intersect(list_scores_dict):
     list_dicts_new = []
 
     for d in list_scores_dict:
-        list_dicts_new.append({k : v for k,v in d.items() if k in shared_scores})
+        list_dicts_new.append(dict((k, v) for k,v in d.items() if k in shared_scores))
 
     return list_dicts_new 
 
@@ -198,7 +204,7 @@ def pdbs_intersect(list_pdbs_dict):
     list_dicts_new = []
 
     for d in list_pdbs_dict:
-        list_dicts_new.append({k : v for k,v in d.items() if k in shared_pdbs})
+        list_dicts_new.append(dict((k, v) for k,v in d.items() if k in shared_pdbs))
 
     return list_dicts_new
 
@@ -209,10 +215,10 @@ def read_dir(path, scoretype, repl_orig=False, rmsd=None, list_energies=None, we
     if not score_files:
 	raise ScoreFileParseError("Cannot find any score files in: "+path)
 
-    pdbs_dict = {os.path.basename(filename)[0:4]: read_vals(filename, scoretype, repl_orig, rmsd=rmsd, list_energies=list_energies, weights=weights, scales=scales, offsets=offsets) for filename in score_files} 
+    pdbs_dict = dict((os.path.basename(filename)[0:4], read_vals(filename, scoretype, repl_orig, rmsd=rmsd, list_energies=list_energies, weights=weights, scales=scales, offsets=offsets)) for filename in score_files) 
 
     #filter None values (due to only 1 value in the scores_dict)
-    pdbs_dict = {k:v for k,v in pdbs_dict.items() if v}
+    pdbs_dict = dict((k,v) for k,v in pdbs_dict.items() if v)
 
     return pdbs_dict
 
@@ -237,7 +243,7 @@ def find_perc (scores_dict):
 def norm_vals (scores_dict, perc_low, perc_high):
 
     #normalize x
-    norm_scores_dict = {k : ((float(v[0]) - perc_low) / (perc_high - perc_low), v[1]) for k,v in scores_dict.items()}
+    norm_scores_dict = dict((k, ((float(v[0]) - perc_low) / (perc_high - perc_low), v[1])) for k,v in scores_dict.items())
 
     return norm_scores_dict
 
@@ -248,10 +254,10 @@ def filter_norm (scores_dict_1, low_also = True):
     else:
         low = -100.0
 
-    filtered_scores = { k : (energy, rmsd) for k, (energy, rmsd) in scores_dict_1.items() if energy < float(2.5) 
+    filtered_scores = dict(( k, (energy, rmsd)) for k, (energy, rmsd) in scores_dict_1.items() if energy < float(2.5)
 								    and energy > low 
 							            and energy < float(2.5) 
-								    and energy > low }
+								    and energy > low )
 
     return filtered_scores
 
@@ -266,10 +272,10 @@ def filter_unnorm (scores_dict, low_also = True):
 
     norm_dict = norm_vals(x_perc_low, x_perc_high, scores_dict) 
 
-    filtered_norm_scores = { k : (energy, rmsd) for k, (energy, rmsd) in scores_dict_1.items() if energy < float(2.5) 
+    filtered_norm_scores = dict(( k , (energy, rmsd)) for k, (energy, rmsd) in scores_dict_1.items() if energy < float(2.5) 
                                                                     and energy > low
                                                                     and energy < float(2.5)       
-                                                                    and energy > low }
+                                                                    and energy > low )
 
     [ filt_norm, filt_unnorm ] = scores_intersect([filtered_norm_scores,scores_dict])
 
@@ -319,7 +325,7 @@ def convert_disc(scores_dict):
 def merge_scores_dicts(list_scores_dict):
     list_new_dicts = scores_intersect(list_scores_dict)
 
-    merged = {k: (sum(d[k][0] for d in list_new_dicts),rmsd) for k,(energy, rmsd) in list_new_dicts[0].items()}
+    merged = dict((k, (sum(d[k][0]) for d in list_new_dicts),rmsd) for k,(energy, rmsd) in list_new_dicts[0].items())
 
     return merged
 
