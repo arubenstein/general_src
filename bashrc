@@ -1,1 +1,3 @@
-export PYTHONPATH="${PYTHONPATH}:/home/arubenstein/git_repos/general_src/"
+export PYTHONPATH=${PYTHONPATH}:~/"/git_repos/general_src/"
+export PATH="${PATH}:/home/arubenstein/dist-packages/"
+export PYTHONPATH="${PYTHONPATH}:/home/arubenstein/dist-packages/"
