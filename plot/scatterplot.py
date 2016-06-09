@@ -7,13 +7,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 #from pylab import *
 
-def draw_actual_plot(ax, x, y, r, title, x_axis, y_axis, cm="Blues_r"):
+def draw_actual_plot(ax, x, y, r, title, x_axis, y_axis, cm="Blues_r", size=10, edgecolors="None"):
 
     if len(r)>1:
         #plot scatter plot
-        s = ax.scatter(x, y, c=r, alpha=0.5,s=10, cmap=cm, edgecolors="None")
+        s = ax.scatter(x, y, c=r, alpha=0.5,s=size, cmap=cm, edgecolors=edgecolors, lw = 2)
     else:
-	    s = ax.scatter(x, y, c=r, alpha=0.5,s=10, edgecolors="None")
+	    s = ax.scatter(x, y, c=r, alpha=0.5,s=size, edgecolors=edgecolors, lw = 2)
     ax.set_title(title)
 
     ax.set_xlabel(x_axis)
