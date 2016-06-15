@@ -2,6 +2,7 @@
 
 """Convenience module to prep various plot functions"""
 
+import os
 import matplotlib.pyplot as plt
 
 def create_ax(x_dim, y_dim, shx=False, shy=False):
@@ -32,10 +33,10 @@ def save_fig(fig, infilename, suffix, width, height):
        right='off',         # ticks along the top edge are off
        labelleft='on')
 
-    file=infilename.rsplit('.',1)[0]
-    out_fig = '%s_%s.png' % (file, suffix)    
+    root, ext = os.path.splitext(infilename)
+    out_fig = '%s_%s.png' % (root, suffix)    
 
-    fig.set_tight_layout(True)
+#    fig.set_tight_layout(True)
 
     fig.set_size_inches(width, height, dpi=120) 
     fig.savefig(out_fig)
