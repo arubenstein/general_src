@@ -24,8 +24,6 @@ def draw_actual_plot(ax, lines, title, x_axis, y_axis):
 def plot_line ( x, y, label, ax, color = None):
     if color is None:
      	color = ax._get_lines.color_cycle.next()
-    print color
-    print label
     ax.plot(y, label=label, color=color)
     
 #    x_tick_marks=[0]
