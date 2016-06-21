@@ -4,7 +4,7 @@
 import conv
 import matplotlib.pyplot as plt
 
-def draw_actual_plot(ax, lines, title, x_axis, y_axis): 
+def plot_series(ax, lines, title, x_axis, y_axis, marker='o', linestyle='-'): 
     ax.set_title(title)
 
     ax.set_xlabel(x_axis)
@@ -16,15 +16,15 @@ def draw_actual_plot(ax, lines, title, x_axis, y_axis):
 		'aquamarine', 'teal', 'cyan', 'steelblue', 'darkblue', 'slateblue', 'darkorchid',
 		'deeppink', 'crimson') 
     for (x,y,label), color in zip(lines, colors):
-        plot_line( x, y, label, ax, color=color) 
+        draw_actual_plot( x, y, label, ax, color=color, marker=marker, linestyle=linestyle) 
 
     ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.05),
               ncol=3, fancybox=True, shadow=True)
 
-def plot_line ( x, y, label, ax, color = None):
+def draw_actual_plot( x, y, label, ax, color = None, marker='o', linestyle='-'):
     if color is None:
      	color = ax._get_lines.color_cycle.next()
-    ax.plot(y, label=label, color=color)
+    ax.plot(y, label=label, color=color, marker=marker, linestyle=linestyle)
     
 #    x_tick_marks=[0]
 #    x_tick_marks.extend(x)

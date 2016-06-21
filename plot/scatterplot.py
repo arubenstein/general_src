@@ -7,6 +7,19 @@ import numpy as np
 import matplotlib.pyplot as plt
 #from pylab import *
 
+def plot_series(ax, lines, title, x_axis, y_axis, colors=None,size=10):
+
+    #not in use currently
+    patterns = ('>', 'o', 'D', '*', '^','s')
+    if colors is None:
+        colors = ('black', 'darkgrey', 'lightcoral', 'orangered', 'orange', 'gold', 'yellow', 'greenyellow',
+        'aquamarine', 'teal', 'cyan', 'steelblue', 'darkblue', 'slateblue', 'darkorchid',
+        'deeppink', 'crimson')
+    for (x,y,label), color in zip(lines, colors):
+        draw_actual_plot(ax, x, y, color, title, x_axis, y_axis, label=label, size=size)
+
+    conv.add_legend(ax)
+
 def draw_actual_plot(ax, x, y, r, title, x_axis, y_axis, cm="Blues_r", size=10, edgecolors="None", label=None, secondary_y=False):
 
     if secondary_y:
