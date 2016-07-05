@@ -7,7 +7,7 @@ import sys
 def main( args ):
     
     inp_file=args[1]
-    WT_counts=args[2]
+    #WT_counts=args[2]
 
     token=inp_file.rsplit('.',1)[0]
     out_fig = '%s_bar.png' % (token)
@@ -18,23 +18,23 @@ def main( args ):
     with open( inp_file ) as f:
         filenames = f.readlines()
 
-    with open( WT_counts ) as f:
-        WT_lines = f.readlines()
+    #with open( WT_counts ) as f:
+    #    WT_lines = f.readlines()
 
-    WT_dict = { line.split()[0] : float(line.split()[1]) for line in WT_lines }
+    #WT_dict = { line.split()[0] : float(line.split()[1]) for line in WT_lines }
     
-    fig,axarr = plt.subplots( len(filenames), 2, sharex=False, sharey=False, squeeze=False )
+    fig,axarr = plt.subplots( len(filenames), 2, sharex=True, sharey=True, squeeze=False )
 
     plt.rcParams.update({'font.size': 10})
 
     for ind,filename in enumerate(filenames):
         with open (filename.strip() ) as f:
             counts = f.readlines()
-
+        counts.pop(0)
 
         title = os.path.basename(filename).strip()
 
-        counts_f = [ float(f.strip()) for f in counts ]
+        counts_f = [ float(f.strip().split()[-1]) for f in counts ]
 
         mu=np.mean(counts_f)
         sigma=np.std(counts_f)
@@ -44,8 +44,8 @@ def main( args ):
 
         if sigma != 0:
 
-            counts_filt = [ f for f in counts_f if (f - mu)/sigma < 10 ]
-
+ #           counts_filt = [ f for f in counts_f if (f - mu)/sigma < 10 ]
+            counts_filt = [ f for f in counts_f if f < 5000 ]
             outliers = [ f for f in counts_f if (f - mu)/sigma > 10 ]
 
         else:
@@ -59,11 +59,12 @@ def main( args ):
         
         text='Min: %.3f\nMax: %.3f\nAvg: %.3f\nStdev: %.3f' % (min_c,max_c,mu,sigma)
 
-        for o in outliers:
-            text+='\nOut: %.3f' % (o)
-        
-        if title in WT_dict:
-            text+='\n\nWT Count: %.3f' %( WT_dict[title] )
+        #for o in outliers:
+        #    text+='\nOut: %.3f' % (o)
+        text+='\nOut: %f' % (len(outliers))
+
+        #if title in WT_dict:
+        #    text+='\n\nWT Count: %.3f' %( WT_dict[title] )
 
         ax = axarr[ind,0]
         # the histogram of the data
