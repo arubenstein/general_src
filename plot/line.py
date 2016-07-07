@@ -4,7 +4,7 @@
 import conv
 import matplotlib.pyplot as plt
 
-def plot_series(ax, lines, title, x_axis, y_axis, marker='o', linestyle='-'): 
+def plot_series(ax, lines, title, x_axis, y_axis, marker='o', linestyle='-', legend=True): 
     ax.set_title(title)
 
     ax.set_xlabel(x_axis)
@@ -18,7 +18,8 @@ def plot_series(ax, lines, title, x_axis, y_axis, marker='o', linestyle='-'):
     for (x,y,label), color in zip(lines, colors):
         draw_actual_plot( x, y, label, ax, color=color, marker=marker, linestyle=linestyle) 
 
-    ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.05),
+    if legend:
+        ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.05),
               ncol=3, fancybox=True, shadow=True)
 
 def draw_actual_plot( x, y, label, ax, color = None, marker='o', linestyle='-'):

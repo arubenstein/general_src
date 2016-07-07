@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 #from pylab import *
 
-def plot_series(ax, lines, title, x_axis, y_axis, colors=None,size=10):
+def plot_series(ax, lines, title, x_axis, y_axis, colors=None,size=10, connect_dots=False):
 
     #not in use currently
     patterns = ('>', 'o', 'D', '*', '^','s')
@@ -20,7 +20,7 @@ def plot_series(ax, lines, title, x_axis, y_axis, colors=None,size=10):
 
     conv.add_legend(ax)
 
-def draw_actual_plot(ax, x, y, r, title, x_axis, y_axis, cm="Blues_r", size=10, edgecolors="None", label=None, secondary_y=False):
+def draw_actual_plot(ax, x, y, r, title, x_axis, y_axis, cm="Blues_r", size=10, edgecolors="None", label=None, secondary_y=False, connect_dots=False):
 
     if secondary_y:
 
@@ -33,6 +33,9 @@ def draw_actual_plot(ax, x, y, r, title, x_axis, y_axis, cm="Blues_r", size=10, 
         s = ax.scatter(x, y, c=r, alpha=0.3,s=size, cmap=cm, edgecolors=edgecolors, lw = 2, label=label)
     else:
         s = ax.scatter(x, y, c=r, alpha=0.3,s=size, edgecolors=edgecolors, lw = 2, label=label)
+
+    if connect_dots:
+        ax.plot(x, y, c='k')
     ax.set_title(title)
 
     ax.set_xlabel(x_axis)

@@ -53,6 +53,13 @@ def add_text_dict(ax, dict_text):
         ax.text(0.8,start_y,'%s:%0.2f\n'% (k, v),ha="right",transform=ax.transAxes,fontsize=8)
         start_y -= 0.05
 
+def annotate_point(ax, x, y, text):
+    ax.annotate(text, xy=(x,y), xytext=(-20,20),
+            textcoords='offset points', ha='center', va='bottom',
+            bbox=dict(boxstyle='round,pad=0.2', fc='yellow', alpha=0.3),
+            arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=0.5',
+                            color='red'),size=10)
+
 #TODO add custom location settings that place legend outside axes
 def add_legend(ax, location="upper center"):
     ax.legend(loc=location, bbox_to_anchor=(0.5, 1.05),
