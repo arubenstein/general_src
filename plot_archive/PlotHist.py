@@ -8,7 +8,7 @@ def main( args ):
     
     inp_file=args[1]
     #WT_counts=args[2]
-
+    
     token=inp_file.rsplit('.',1)[0]
     out_fig = '%s_bar.png' % (token)
 
@@ -44,8 +44,8 @@ def main( args ):
 
         if sigma != 0:
 
- #           counts_filt = [ f for f in counts_f if (f - mu)/sigma < 10 ]
-            counts_filt = [ f for f in counts_f if f < 5000 ]
+            #counts_filt = [ f for f in counts_f if (f - mu)/sigma < 10 ]
+            counts_filt = [ f for f in counts_f if f < 100 ]
             outliers = [ f for f in counts_f if (f - mu)/sigma > 10 ]
 
         else:
@@ -69,7 +69,8 @@ def main( args ):
         ax = axarr[ind,0]
         # the histogram of the data
         if len(counts_filt) > 1:
-            n, bins, patches = ax.hist(counts_filt, 50, normed=True,facecolor='green', log=True,alpha=0.75)
+            #n, bins, patches = ax.hist(counts_filt, 50, normed=True,facecolor='green', log=True ,alpha=0.75)
+            n, bins, patches = ax.hist(counts_filt, 50, normed=False,facecolor='green', log=True, alpha=0.75)
         else:
             ax.text(0.5,0.5,"Only one data point in dataset",
                 horizontalalignment='center',
@@ -78,7 +79,7 @@ def main( args ):
                 transform=ax.transAxes)
 
         ax.set_xlabel('Counts')
-        ax.set_ylabel('Probability (log)')
+        ax.set_ylabel('Number of Counts')
         ax.set_title(title,fontsize=8)
 
         ax = axarr[ind,1]
