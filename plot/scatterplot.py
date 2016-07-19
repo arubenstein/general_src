@@ -7,27 +7,49 @@ import numpy as np
 import matplotlib.pyplot as plt
 #from pylab import *
 
-def draw_actual_plot(ax, x, y, r, title, x_axis, y_axis, cm="Blues_r"):
+def plot_series(ax, lines, title, x_axis, y_axis, colors=None,size=10, connect_dots=False):
+
+    #not in use currently
+    patterns = ('>', 'o', 'D', '*', '^','s')
+    if colors is None:
+        colors = ('black', 'darkgrey', 'lightcoral', 'orangered', 'orange', 'gold', 'yellow', 'greenyellow',
+        'aquamarine', 'teal', 'cyan', 'steelblue', 'darkblue', 'slateblue', 'darkorchid',
+        'deeppink', 'crimson')
+    for (x,y,label), color in zip(lines, colors):
+        draw_actual_plot(ax, x, y, color, title, x_axis, y_axis, label=label, size=size)
+
+    conv.add_legend(ax)
+
+def draw_actual_plot(ax, x, y, r, title, x_axis, y_axis, cm="Blues_r", size=10, edgecolors="None", label=None, secondary_y=False, connect_dots=False):
+
+    if secondary_y:
+
+        ax = ax.twinx()
+    else:
+        ax = ax
 
     if len(r)>1:
         #plot scatter plot
-        s = ax.scatter(x, y, c=r, alpha=0.5,s=10, cmap=cm, edgecolors="None")
+        s = ax.scatter(x, y, c=r, alpha=0.3,s=size, cmap=cm, edgecolors=edgecolors, lw = 2, label=label)
     else:
-	    s = ax.scatter(x, y, c=r, alpha=0.5,s=10, edgecolors="None")
+        s = ax.scatter(x, y, c=r, alpha=0.3,s=size, edgecolors=edgecolors, lw = 2, label=label)
+
+    if connect_dots:
+        ax.plot(x, y, c='k')
     ax.set_title(title)
 
     ax.set_xlabel(x_axis)
-    ax.set_ylabel(y_axis)
+    ax.set_ylabel(y_axis, color=r)
 
     for tk in ax.get_yticklabels():
         tk.set_visible(True)
     for tk in ax.get_xticklabels():
         tk.set_visible(True)
 
-    return s
+    return s, ax
 
 def find_fit_regression(x, y):
-    slope, intercept, r_value, p_value, std_err = stats.linregress(x_both, y_both)                                            
+    slope, intercept, r_value, p_value, std_err = stats.linregress(x, y)                                            
     r_2 = r_value**2
 
     p = np.array([slope,intercept])
@@ -105,11 +127,19 @@ def plot_regression(ax, x, y, fit=False, neg=False):
     # Annotate plot with R^2
     conv.add_text(ax, "C", r_2)
 
-def add_x_y_line(ax, min_val, max_val):
-    lims = [min_val, max_val]
-#        np.min([ax.get_xlim(), ax.get_ylim()]),  # min of both axes
-#        np.max([ax.get_xlim(), ax.get_ylim()]),  # max of both axes
-#    ]
-
+def add_x_y_line(ax, min_val=None, max_val=None, neg=False):
+    if min_val is not None and max_val is not None:
+        lims = [min_val, max_val]
+    else:
+        lims = [
+            np.min([ax.get_xlim(), ax.get_ylim()]),  # min of both axes
+            np.max([ax.get_xlim(), ax.get_ylim()]),  # max of both axes
+            ]
+    if neg:
+        lims1 = [lims[0], lims[1]]
+        lims2 = [lims[1], lims[0]]
+    else:
+        lims1 = lims
+        lims2 = lims
     # now plot both limits against eachother
     ax.plot(lims, lims, 'k-', alpha=0.75, zorder=0)

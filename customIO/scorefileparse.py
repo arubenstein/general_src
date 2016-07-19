@@ -310,12 +310,28 @@ def filter_unnorm_pdbs (pdbs_dict, low_also = True):
  
     return new_dict
 
-def get_energies (scores_dict):
-    energies = [ e[0] for e in scores_dict.values() ]
+def get_energies (scores_dict, sort_by=None):
+    if sort_by is None:
+        energies = [ e[0] for k,e in sorted(scores_dict.items()) ]
+    elif sort_by == "energy":
+        energies = [ e[0] for e in sorted(scores_dict.values(), key=lambda x: x[0]) ]
+    elif sort_by == "rmsd":
+        energies = [ e[0] for e in sorted(scores_dict.values(), key=lambda x: x[1]) ]
+    else:
+        error_str="sort_by must be either energy or rmsd, not " + sort_by
+        raise ValueError(error_str)    
     return energies
 
-def get_rmsd (scores_dict):
-    rmsd = [ e[1] for e in scores_dict.values() ]
+def get_rmsd (scores_dict, sort_by=None):
+    if sort_by is None:
+        rmsd = [ e[1] for k,e in sorted(scores_dict.items()) ]
+    elif sort_by == "energy":
+        rmsd = [ e[1] for e in sorted(scores_dict.values(), key=lambda x: x[0]) ]
+    elif sort_by == "rmsd":
+        rmsd = [ e[1] for e in sorted(scores_dict.values(), key=lambda x: x[1]) ]   
+    else:
+        error_str="sort_by must be either energy or rmsd, not " + sort_by 
+        raise ValueError(error_str)
     return rmsd
 
 def convert_disc(scores_dict):
