@@ -22,15 +22,18 @@ def plot_series(ax, lines, title, x_axis, y_axis, marker='o', linestyle='-', leg
         ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.05),
               ncol=3, fancybox=True, shadow=True)
 
-def draw_actual_plot( x, y, label, ax, color = None, marker='o', linestyle='-'):
+def draw_actual_plot( x, y, label, ax, color = None, marker='o', linestyle='-', title=None, x_axis=None, y_axis=None):
     if color is None:
      	color = ax._get_lines.color_cycle.next()
     ax.plot(y, label=label, color=color, marker=marker, linestyle=linestyle)
+
+    if title is not None:
+        ax.set_title(title)
+    if x_axis is not None:
+        ax.set_xlabel(x_axis)
+    if y_axis is not None:
+        ax.set_ylabel(y_axis)
     
-#    x_tick_marks=[0]
-#    x_tick_marks.extend(x)
-#    x_tick_marks.append(x[len(x)-1]+1)
     ax.set_xticks(range(len(x)), x)
 
-    plt.legend(loc='upper right')
 

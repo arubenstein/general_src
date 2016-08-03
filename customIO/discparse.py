@@ -50,8 +50,8 @@ def best_of_5(scores_dict):
 def scores_dict_to_metrics(scores_dict):
     temp_fn = "temp_" + ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(4)) + ".txt"
     scorefileparse.write_scores_dict_score_file(scores_dict, temp_fn)
-    if not os.path.isfile("~/git_repos/bakerlab_scripts/boinc/score_energy_landscape.py"):
-        raise OSError("disc scoring script not found. please clone bakerlab_script repo and place it in ~/git_repos/")
+    #if not os.path.isfile("~/git_repos/bakerlab_scripts/boinc/score_energy_landscape.py"):
+    #    raise OSError("disc scoring script not found. please clone bakerlab_script repo and place it in ~/git_repos/")
     output = subprocess.check_output(os.path.expanduser("~/git_repos/bakerlab_scripts/boinc/score_energy_landscape.py -abinitio_scorefile {0}".format(temp_fn)), shell=True)
     lines = output.splitlines()
     metr_tr = { "PNear" : "PNear", "SampledRMS" : "SRMS" , "WeightedRMS" : "WRMS", "tyka_discrimination.py" : "Disc", "calcbinnedboltz.pl" : "BinBoltz" }
@@ -63,3 +63,24 @@ def scores_dict_to_metrics(scores_dict):
 def pdbs_dict_to_metrics(pdbs_dict,scoretype="rosetta"):
     metrics_pdbs_dict = { pdb : scores_dict_to_metrics(scores_dict) for pdb, scores_dict in pdbs_dict.items() }
     return metrics_pdbs_dict
+
+def show_scores_dict_metrics(scores_metrics_dict,pdb="", filename=None):
+    output = '\t'.join([pdb] + [ str(t) for m, t in sorted(scores_metrics_dict.items()) ])
+    if filename is not None:
+        with open( filename, 'a') as f:
+            f.write(output+"\n")
+    else:
+        print output
+def show_pdbs_dict_metrics(pdbs_metrics_dict, filename=None):
+    keys = pdbs_metrics_dict[pdbs_metrics_dict.keys()[0]].keys()
+    output = '\t'.join(["PDB"] + sorted(keys))
+    if filename is not None:
+        with open( filename, 'w') as f:
+            f.write(output + "\n")
+    else:
+        print output
+    for pdb, metric in sorted(pdbs_metrics_dict.items()):
+        show_scores_dict_metrics(metric, pdb, filename)
+
+
+    

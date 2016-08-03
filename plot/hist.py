@@ -6,9 +6,9 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import FormatStrFormatter
 import numpy as np
 
-def draw_actual_plot(ax, values, title, x_axis, y_axis, log=False):
+def draw_actual_plot(ax, values, title, x_axis, log=False, normed=True):
     if len(values) > 1:
-        counts, bins, patches = ax.hist(values, 10, normed=True,facecolor='green', log=log,alpha=0.75)
+        counts, bins, patches = ax.hist(values, 10, normed=normed,facecolor='green', log=log,alpha=0.75)
     else:
         ax.text(0.5,0.5,"Only one data point in dataset",
             horizontalalignment='center',
@@ -16,6 +16,7 @@ def draw_actual_plot(ax, values, title, x_axis, y_axis, log=False):
             fontsize=10, color='green',
             transform=ax.transAxes)
 
+    y_axis = "Counts" if ! normed else "Probability"
     y_axis_suff = " (log)" if log else ""
     y_axis = y_axis + y_axis_suff
 
