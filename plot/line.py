@@ -12,7 +12,7 @@ def plot_series(ax, lines, title, x_axis, y_axis, marker='o', linestyle='-', leg
 
     #not in use currently
     patterns = ('>', 'o', 'D', '*', '^','s')
-    colors = ('black', 'darkgrey', 'lightcoral', 'orangered', 'orange', 'gold', 'yellow', 'greenyellow',
+    colors = ('black', 'steelblue', 'lightcoral', 'orangered', 'orange', 'gold', 'yellow', 'greenyellow',
 		'aquamarine', 'teal', 'cyan', 'steelblue', 'darkblue', 'slateblue', 'darkorchid',
 		'deeppink', 'crimson') 
     for (x,y,label), color in zip(lines, colors):

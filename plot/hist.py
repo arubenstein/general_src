@@ -16,7 +16,7 @@ def draw_actual_plot(ax, values, title, x_axis, log=False, normed=True):
             fontsize=10, color='green',
             transform=ax.transAxes)
 
-    y_axis = "Counts" if ! normed else "Probability"
+    y_axis = "Counts" if not normed else "Probability"
     y_axis_suff = " (log)" if log else ""
     y_axis = y_axis + y_axis_suff
 

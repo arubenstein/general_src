@@ -57,7 +57,7 @@ def scores_dict_to_metrics(scores_dict):
     metr_tr = { "PNear" : "PNear", "SampledRMS" : "SRMS" , "WeightedRMS" : "WRMS", "tyka_discrimination.py" : "Disc", "calcbinnedboltz.pl" : "BinBoltz" }
     metrics = { metr_tr[token] : float(lines[1].split()[ind]) for ind,token in enumerate(lines[0].split()) }
     os.remove(temp_fn)
-    metrics["Best5"] = best_of_5(scores_dict)
+    #metrics["Best5"] = best_of_5(scores_dict)
     return metrics
 
 def pdbs_dict_to_metrics(pdbs_dict,scoretype="rosetta"):

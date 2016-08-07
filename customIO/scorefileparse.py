@@ -36,7 +36,7 @@ def read_vals(filename, scoretype, repl_orig=False, rmsd=None, list_energies=Non
 
     tokens = lines.pop(0).split()
 
-    if tokens[0] == "SEQUENCE:":
+    if "SEQUENCE" in tokens[0]:
         tokens = lines.pop(0).split() #column header line
 
     #will throw ValueError if energy_name is not found

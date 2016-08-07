@@ -12,7 +12,7 @@ def plot_series(ax, lines, title, x_axis, y_axis, colors=None,size=10, connect_d
     #not in use currently
     patterns = ('>', 'o', 'D', '*', '^','s')
     if colors is None:
-        colors = ('black', 'darkgrey', 'lightcoral', 'orangered', 'orange', 'gold', 'yellow', 'greenyellow',
+        colors = ('black', 'steelblue', 'lightcoral', 'orangered', 'orange', 'gold', 'yellow', 'greenyellow',
         'aquamarine', 'teal', 'cyan', 'steelblue', 'darkblue', 'slateblue', 'darkorchid',
         'deeppink', 'crimson')
     for (x,y,label), color in zip(lines, colors):
@@ -112,11 +112,11 @@ def plot_regression(ax, x, y, fit=False, neg=False):
         y2 = np.linspace(np.min(y_model), np.max(y_model), 100)
 
     # Confidence Interval
-    CI = t*s_err*np.sqrt(1/n +(x2-np.mean(x))**2/np.sum((x-np.mean(x))**2))
-    ax.fill_between(x2, y2+CI, y2-CI, color='#b9cfe7', edgecolor='')
+#    CI = t*s_err*np.sqrt(1/n +(x2-np.mean(x))**2/np.sum((x-np.mean(x))**2))
+#    ax.fill_between(x2, y2+CI, y2-CI, color='#b9cfe7', edgecolor='')
 
     '''Minor hack for labeling CI fill_between()'''
-    ax.plot(x2, y2+CI, '-', color='#b9cfe7', label='95% Confidence Limits')
+#    ax.plot(x2, y2+CI, '-', color='#b9cfe7', label='95% Confidence Limits')
 
     # Prediction Interval
     PI = t*s_err*np.sqrt(1+1/n+(x2-np.mean(x))**2/np.sum((x-np.mean(x))**2))
