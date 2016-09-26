@@ -23,7 +23,8 @@ def main( args ):
 
     #WT_dict = { line.split()[0] : float(line.split()[1]) for line in WT_lines }
     
-    fig,axarr = plt.subplots( len(filenames), 2, sharex=True, sharey=True, squeeze=False )
+#    fig,axarr = plt.subplots( len(filenames), 2, sharex=False, sharey=False, squeeze=False )
+    fig,axarr = plt.subplots( len(filenames), 1, sharex=False, sharey=False, squeeze=False )
 
     plt.rcParams.update({'font.size': 10})
 
@@ -35,7 +36,6 @@ def main( args ):
         title = os.path.basename(filename).strip()
 
         counts_f = [ float(f.strip().split()[-1]) for f in counts ]
-
         mu=np.mean(counts_f)
         sigma=np.std(counts_f)
 
@@ -44,8 +44,8 @@ def main( args ):
 
         if sigma != 0:
 
-            #counts_filt = [ f for f in counts_f if (f - mu)/sigma < 10 ]
-            counts_filt = [ f for f in counts_f if f < 100 ]
+            counts_filt = [ f for f in counts_f if (f - mu)/sigma < 10 ]
+            #counts_filt = [ f for f in counts_f if f < 100 ]
             outliers = [ f for f in counts_f if (f - mu)/sigma > 10 ]
 
         else:
@@ -56,7 +56,7 @@ def main( args ):
         max_c = np.amax(counts_filt)
         mu=np.mean(counts_filt)
         sigma=np.std(counts_filt)
-        
+    	print len(counts_filt)    
         text='Min: %.3f\nMax: %.3f\nAvg: %.3f\nStdev: %.3f' % (min_c,max_c,mu,sigma)
 
         #for o in outliers:
@@ -69,8 +69,8 @@ def main( args ):
         ax = axarr[ind,0]
         # the histogram of the data
         if len(counts_filt) > 1:
-            #n, bins, patches = ax.hist(counts_filt, 50, normed=True,facecolor='green', log=True ,alpha=0.75)
-            n, bins, patches = ax.hist(counts_filt, 50, normed=False,facecolor='green', log=True, alpha=0.75)
+            n, bins, patches = ax.hist(counts_filt, 50, normed=True,facecolor='green', log=True ,alpha=0.75)
+            #n, bins, patches = ax.hist(counts_filt, 50, normed=False,facecolor='green', log=True, alpha=0.75)
         else:
             ax.text(0.5,0.5,"Only one data point in dataset",
                 horizontalalignment='center',
@@ -80,19 +80,19 @@ def main( args ):
 
         ax.set_xlabel('Counts')
         ax.set_ylabel('Number of Counts')
-        ax.set_title(title,fontsize=8)
+        #ax.set_title(title,fontsize=8)
 
-        ax = axarr[ind,1]
+        #ax = axarr[ind,1]
 
-        ax.text(0.5, 0.5, text,
-           horizontalalignment='center',
-           verticalalignment='center',
-           fontsize=10, color='red',
-           transform=ax.transAxes)
+        #ax.text(0.5, 0.5, text,
+        #   horizontalalignment='center',
+        #   verticalalignment='center',
+        #   fontsize=10, color='red',
+        #   transform=ax.transAxes)
 
-        plt.rcParams.update({'font.size': 10})
+        plt.rcParams.update({'font.size': 16})
 
-    fig.set_size_inches(2*4, len(filenames)*4)
+    fig.set_size_inches(8, len(filenames)*4)
 
     plt.tight_layout(pad=1.08, h_pad=0.2, w_pad=0.2, rect=None)
 

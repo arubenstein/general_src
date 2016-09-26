@@ -16,7 +16,7 @@ def plot_series(ax, lines, title, x_axis, y_axis, colors=None,size=10, connect_d
         'aquamarine', 'teal', 'cyan', 'steelblue', 'darkblue', 'slateblue', 'darkorchid',
         'deeppink', 'crimson')
     for (x,y,label), color in zip(lines, colors):
-        draw_actual_plot(ax, x, y, color, title, x_axis, y_axis, label=label, size=size)
+        draw_actual_plot(ax, x, y, color, title, x_axis, y_axis, label=label, size=size, connect_dots=connect_dots)
 
     conv.add_legend(ax)
 
