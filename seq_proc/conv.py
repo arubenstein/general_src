@@ -4,13 +4,25 @@ import collections
 from string import ascii_uppercase
 import math
 
-def hamdist(str1, str2):
-    '''Determines hamming distance between two strings'''
+def actual_hamdist(str1, str2):
     diffs = 0
     for ch1, ch2 in zip(str1, str2):
         if ch1 != ch2:
             diffs += 1
     return diffs
+
+def hamdist(str1, str2, all_threading=False):
+    '''Determines hamming distance between two strings'''
+    if all_threading:
+        if len(str1) > len(str2):
+            d = min([ actual_hamdist(str1[ind:ind+len(str2)],str2) for ind in xrange(0,len(str1)-len(str2)+1) ])
+        elif len(str1) < len(str2):
+            d = min([ actual_hamdist(str2[ind:ind+len(str1)],str1) for ind in xrange(0,len(str2)-len(str1)+1) ])
+        else:
+            d = actual_hamdist(str1, str2)
+    else:
+        d = actual_hamdist(str1, str2)
+    return d
 
 def covar_MI(list_seqs, pos1, pos2):
     e1 = calc_entropy(calc_probs(retrieve_freq_one_pos(list_seqs, pos1)))
