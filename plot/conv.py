@@ -13,11 +13,11 @@ def create_ax(x_dim, y_dim, shx=False, shy=False):
 
     return fig,axarr
 
-def save_fig(fig, infilename, suffix, width, height, tight=True):
+def save_fig(fig, infilename, suffix, width, height, tight=True, size=8):
 
     """Performs several functions related to saving figures, i.e. fontsize, tickparams, filename, and size"""
 
-    plt.rcParams.update({'font.size': 8})
+    plt.rcParams.update({'font.size': size})
 
     plt.tick_params(
         axis='x',          # changes apply to the x-axis

@@ -26,7 +26,7 @@ def read_vals(filename, scoretype, repl_orig=False, rmsd=None, list_energies=Non
         list_energies = []
         if scoretype == "amber":
             sys.stderr.write("Warning: no columns list_energies supplied: defaulting to tot\n")
-            list_energies.append("tot")
+            list_energies.append("total_score")
         elif scoretype == "rosetta":
             sys.stderr.write("Warning: no columns list_energies supplied: defaulting to total_score\n")
             list_energies.append("total_score")	
@@ -36,13 +36,22 @@ def read_vals(filename, scoretype, repl_orig=False, rmsd=None, list_energies=Non
 
     tokens = lines.pop(0).split()
 
-    if tokens[0] == "SEQUENCE:":
+    if "SEQUENCE" in tokens[0]:
         tokens = lines.pop(0).split() #column header line
 
     #will throw ValueError if energy_name is not found
     try:
 	indices = [tokens.index(e_name) for e_name in list_energies]
+    except ValueError as e:
+        if list_energies[0] == "total_score":
+            list_energies[0] = "tot"
+            try:
+                indices = [tokens.index(e_name) for e_name in list_energies]
+	    except ValueError as e:
+                raise ScoreFileParseError(filename, str(e))
     
+
+    try:                
         rmsd_ind = tokens.index(rmsd)
         desc_ind = tokens.index("description")
     except ValueError as e:

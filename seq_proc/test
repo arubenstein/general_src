@@ -1,0 +1,3 @@
+#!/bin/bash   
+path="/Users/arubenstein/Dropbox/Research/Khare/Lists_Sequences" 
+python SimClUn.py --sequence_list $path'/'list1LVBcleaved.txt TEV CLEAVED --sequence_list $path'/'list1LVBuncleaved.txt TEV UNCLEAVED --sequence_list $path'/'list3M5Lcleaved.txt HCV CLEAVED --sequence_list $path'/'list3M5Luncleaved.txt HCV UNCLEAVED --sequence_list $path'/'listGraBcleaved.txt GrB CLEAVED --sequence_list $path'/'listGraBuncleaved.txt GrB UNCLEAVED --sequence_list $path'/'listHIVncleaved.txt HIV CLEAVED --sequence_list $path'/'listHIVnuncleaved.txt HIV UNCLEAVED --sequence_list $path'/'list3AYUcleaved.txt MMP2 CLEAVED --sequence_list $path'/'list3AYUuncleaved.txt MMP2 UNCLEAVED --output_prefix ~/Dropbox/Research/Khare/Misc/  
