@@ -6,12 +6,12 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import FormatStrFormatter
 import numpy as np
 
-def draw_actual_plot(ax, values, title, x_axis, log=False, normed=True, label=None, nbins=10):
-    colors = ('black', 'steelblue', 'lightcoral', 'orangered', 'orange', 'gold', 'yellow', 'greenyellow',
-                'aquamarine', 'teal', 'cyan', 'steelblue', 'darkblue', 'slateblue', 'darkorchid',
+def draw_actual_plot(ax, values, title, x_axis, log=False, normed=True, label=None, nbins=10, stacked=False):
+    colors = ('cyan', 'black', 'crimson', 'darkorchid', 'green', 'gold', 'yellow', 'greenyellow',
+                'aquamarine', 'teal', 'cyan', 'darkblue', 'slateblue', 'darkorchid',
                 'deeppink', 'crimson')
     if len(values) > 1:
-        counts, bins, patches = ax.hist(values, nbins, normed=normed,color=colors[0:len(label)], log=log,alpha=0.75, label=label)
+        counts, bins, patches = ax.hist(values, nbins, normed=normed,color=colors[0:len(label)], log=log,alpha=0.75, label=label, stacked=stacked)
     else:
         ax.text(0.5,0.5,"Only one data point in dataset",
             horizontalalignment='center',
@@ -23,7 +23,7 @@ def draw_actual_plot(ax, values, title, x_axis, log=False, normed=True, label=No
     y_axis_suff = " (log)" if log else ""
     y_axis = y_axis + y_axis_suff
 
-    #ax.set_xlabel(x_axis)
+    ax.set_xlabel(x_axis)
     ax.set_ylabel(y_axis)
     ax.set_title(title)
 

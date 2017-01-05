@@ -62,8 +62,14 @@ def annotate_point(ax, x, y, text):
 
 #TODO add custom location settings that place legend outside axes
 def add_legend(ax, location="upper center"):
-    ax.legend(loc=location, bbox_to_anchor=(0.5, 1.05),
-              ncol=3, fancybox=True, shadow=True)
+    if location=="upper center":
+        bbox_to_anchor=(0.5, 1.05)
+	ncol=3
+    else:
+	bbox_to_anchor=(0.9, 1.05)
+        ncol=1
+    ax.legend(loc=location, bbox_to_anchor=bbox_to_anchor,
+              ncol=ncol, fancybox=True, shadow=True)
 
 def add_ver_line(ax, ymin=0, ymax=1, x=0, color='k'):
 

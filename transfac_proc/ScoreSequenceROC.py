@@ -68,26 +68,26 @@ def main(args):
     uncleaved_seqs_file=args[4]
  
     #make a name for the score file
-    tokens=expTransfacFile.rsplit('.',1)
+    tokens=exp_transfac_file.rsplit('.',1)
     file=tokens[0]
     expROC = '%s_roc.png' % (file)
 
-    tokens=predTransfacFile.rsplit('.',1)
+    tokens=pred_transfac_file.rsplit('.',1)
     file=tokens[0]
     predROC = '%s_roc.png' % (file)    
     predDist = '%s_auc_dist.txt' % (file)   
 
     #this is the representation of a transfac.  It is a list of dictionaries - each item in the list holds one dictionary for each position
     #each dictionary holds one item per amino acid, the key for the dict is the one letter code for the amino acid and the value is the probability
-    expFreq = readSpecProfile( expTransfacFile )
-    predFreq = readSpecProfile( predTransfacFile )
+    expFreq = readSpecProfile( exp_transfac_file )
+    predFreq = readSpecProfile( pred_transfac_file )
 
     #your code
     #read in list of seqs
-    with open(cleavedSeqsFile) as seqs_file:
+    with open(cleaved_seqs_file) as seqs_file:
         cleavedList = seqs_file.readlines()
 
-    with open(uncleavedSeqsFile) as seqs_file:
+    with open(uncleaved_seqs_file) as seqs_file:
         uncleavedList = seqs_file.readlines()
 
     expScoresList = []
@@ -113,7 +113,7 @@ def main(args):
     predAuc = areaUnderCurve( len(cleavedList),len(uncleavedList),predScoresList,predROC,'r',"Pred")
     subtAuc = float(expAuc) - float(predAuc)
 
-    pVals_loss = os.path.basename(expTransfacFile).rstrip()
+    pVals_loss = os.path.basename(exp_transfac_file).rstrip()
     pVals_loss = pVals_loss.rsplit('.',1)[0]
     pVals_loss = '/Users/arubenstein/Dropbox/Research/Khare/p_Values/%s/100000_loss.txt' % (pVals_loss)
 

@@ -54,7 +54,11 @@ do
                 gld_std_path=$gld_std_path'1SPS.transfac'
                 gld_std_cld=$gld_std_lists'list1SPScleaved.txt'
 #                gld_std_ucld=$gld_std_lists'list1SPSuncleaved.txt'
-	else
+        elif [[ $i == *2he4*.transfac ]];then
+                gld_std_path=$gld_std_path'2he4.transfac'
+                gld_std_cld=$gld_std_lists'list2he4cleaved.txt'
+                gld_std_ucld=$gld_std_lists'list2he4uncleaved.txt'
+        else
 		gld_std_path=""
 	fi
 	fi
@@ -62,30 +66,30 @@ do
 	npos=`tail -n +2 $i  | wc -l | awk '{print $1}'`	
 
 	if [ -n "$gld_std_path" ];then
-		python /Users/arubenstein/Dropbox/Research/Khare/Scripts/JensenShannon.py $i $gld_std_path
+		python ~/git_repos/general_src/transfac_proc/Distances.py $i $gld_std_path
 		if [ -n "$gld_std_ucld" ];then
 			echo $gld_std_ucld $i first 
-                        python /Users/arubenstein/Dropbox/Research/Khare/Scripts/ScoreSequenceROC.py $gld_std_path $i $gld_std_cld $gld_std_ucld
+                        python ~/git_repos/general_src/transfac_proc/ScoreSequenceROC.py $gld_std_path $i $gld_std_cld $gld_std_ucld
 #                	 python /Users/arubenstein/Dropbox/Research/Khare/Scripts/ScoreSequenceBar.py $gld_std_path $i $gld_std_cld $gld_std_ucld
                 fi
 
 		if [[ $i != *enr.transfac ]];then
-                	python /Users/arubenstein/Dropbox/Research/Khare/Scripts/EnrichBackground.py /Users/arubenstein/Dropbox/Research/Khare/PDB_Files/figures/peptiDB/avg'/peptiDB_'$npos.transfac $i
+                	python ~/git_repos/general_src/transfac_proc/EnrichBackground.py /Users/arubenstein/Dropbox/Research/Khare/PDB_Files/figures/peptiDB/avg'/peptiDB_'$npos.transfac $i
 #			python /Users/arubenstein/Dropbox/Research/Khare/Scripts/EnrichBackground.py /Users/arubenstein/Dropbox/Research/Khare/PDB_Files/figures/figure_4_controls/sequence_tolerance/pepti_DB/peptiDB_avg.transfac $i
                 	enr="${i%.*}"_enr.transfac
-			python /Users/arubenstein/Dropbox/Research/Khare/Scripts/JensenShannon.py $enr $gld_std_path
+			python ~/git_repos/general_src/transfac_proc/Distances.py $enr $gld_std_path
 			if [ -n "$gld_std_ucld" ];then
 				echo $gld_std_ucld $i
-                 		python /Users/arubenstein/Dropbox/Research/Khare/Scripts/ScoreSequenceROC.py $gld_std_path $enr $gld_std_cld $gld_std_ucld
+                 		python ~/git_repos/general_src/transfac_proc/ScoreSequenceROC.py $gld_std_path $enr $gld_std_cld $gld_std_ucld
 #                                python /Users/arubenstein/Dropbox/Research/Khare/Scripts/ScoreSequenceBar.py $gld_std_path $enr $gld_std_cld $gld_std_ucld
 
 			fi
-	                python /Users/arubenstein/Dropbox/Research/Khare/Scripts/Info.py $i 
-			python /Users/arubenstein/Dropbox/Research/Khare/Scripts/Info.py $enr
+	                python ~/git_repos/general_src/transfac_proc/Info.py $i 
+			python ~/git_repos/general_src/transfac_proc/Info.py $enr
 
 		fi
 	elif [  -n "$i_gld_std_path" ];then
-		python /Users/arubenstein/Dropbox/Research/Khare/Scripts/JensenShannon.py $i $i_gld_std_path
+		python ~/git_repos/general_src/transfac_proc/Distances.py $i $i_gld_std_path
 	fi
-	python /Users/arubenstein/Dropbox/Research/Khare/Scripts/Info.py $i 
+	python ~/git_repos/general_src/transfac_proc/Info.py $i 
 done

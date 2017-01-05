@@ -7,20 +7,20 @@ import numpy as np
 import matplotlib.pyplot as plt
 #from pylab import *
 
-def plot_series(ax, lines, title, x_axis, y_axis, colors=None,size=10, connect_dots=False):
+def plot_series(ax, lines, title, x_axis, y_axis, colors=None,size=10, connect_dots=False, alpha=0.3, edgecolors=None):
 
     #not in use currently
     patterns = ('>', 'o', 'D', '*', '^','s')
     if colors is None:
-        colors = ('black', 'steelblue', 'lightcoral', 'orangered', 'orange', 'gold', 'yellow', 'greenyellow',
-        'aquamarine', 'teal', 'cyan', 'steelblue', 'darkblue', 'slateblue', 'darkorchid',
-        'deeppink', 'crimson')
+        colors = ('cyan', 'orange', 'greenyellow', 'steelblue', 'crimson', 'gold', 'yellow', 'greenyellow',
+                'aquamarine', 'teal', 'cyan', 'steelblue', 'darkblue', 'slateblue', 'darkorchid',
+                'deeppink', 'crimson')    
     for (x,y,label), color in zip(lines, colors):
-        draw_actual_plot(ax, x, y, color, title, x_axis, y_axis, label=label, size=size, connect_dots=connect_dots)
+        draw_actual_plot(ax, x, y, color, title, x_axis, y_axis, label=label, size=size, connect_dots=connect_dots, alpha=alpha, edgecolors=edgecolors)
 
     conv.add_legend(ax)
 
-def draw_actual_plot(ax, x, y, r, title, x_axis, y_axis, cm="Blues_r", size=10, edgecolors="None", label=None, secondary_y=False, connect_dots=False):
+def draw_actual_plot(ax, x, y, r, title, x_axis, y_axis, cm="Blues_r", size=10, edgecolors="None", label=None, secondary_y=False, connect_dots=False, alpha=0.3):
 
     if secondary_y:
 
@@ -30,16 +30,22 @@ def draw_actual_plot(ax, x, y, r, title, x_axis, y_axis, cm="Blues_r", size=10, 
 
     if len(r)>1:
         #plot scatter plot
-        s = ax.scatter(x, y, c=r, alpha=0.3,s=size, cmap=cm, edgecolors=edgecolors, lw = 2, label=label)
+        s = ax.scatter(x, y, c=r, alpha=alpha,s=size, cmap=cm, edgecolors=edgecolors, lw = 1, label=label)
     else:
-        s = ax.scatter(x, y, c=r, alpha=0.3,s=size, edgecolors=edgecolors, lw = 2, label=label)
+        s = ax.scatter(x, y, c=r, alpha=1.0,s=size, edgecolors=edgecolors, lw = 1, label=label)
 
     if connect_dots:
         ax.plot(x, y, c='k')
     ax.set_title(title)
 
+
     ax.set_xlabel(x_axis)
-    ax.set_ylabel(y_axis, color=r)
+    if secondary_y: #not completely true, should have another setting to show that will beplotting secondary plot
+        ylabel_col = r
+    else:
+        ylabel_col = 'k'
+
+    ax.set_ylabel(y_axis, color=ylabel_col)
 
     for tk in ax.get_yticklabels():
         tk.set_visible(True)

@@ -8,8 +8,20 @@ from pylab import *
 
 def binarizeList ( firstList ):
     binary_freq = []
+
+    choose_val = 0.10    
+
+    max_val = max(firstList)
+    if max_val < 0.10:
+        if max_val > 0.09:
+	    choose_val = 0.09
+	elif max_val > 0.08:
+	    choose_val = 0.08
+	elif max_val > 0.07:
+	    choose_val = 0.07
+    	
     for val in firstList:
-	if val > .10:
+	if val > choose_val:
 	    binary_freq.append( 1 )
         else:
 	    binary_freq.append( 0 )

@@ -28,6 +28,6 @@ do
 		lower_ind=-2
 	fi
     fi
-    weblogo -s large -F png -X NO -Y YES --fineprint "" -c chemistry -U probability --composition equiprobable -A protein -f $i -o ${i%.txt}.png
+    weblogo -s large -F png -X NO -Y NO --fineprint "" -c chemistry -U probability --composition equiprobable -A protein -f $i -o ${i%.txt}.png
 
 done
