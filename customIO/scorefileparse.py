@@ -39,23 +39,33 @@ def read_vals(filename, scoretype, repl_orig=False, rmsd=None, list_energies=Non
     if "SEQUENCE" in tokens[0]:
         tokens = lines.pop(0).split() #column header line
 
-    #will throw ValueError if energy_name is not found
-    try:
-	indices = [tokens.index(e_name) for e_name in list_energies]
-    except ValueError as e:
-        if list_energies[0] == "total_score":
-            list_energies[0] = "tot"
-            try:
-                indices = [tokens.index(e_name) for e_name in list_energies]
-	    except ValueError as e:
-                raise ScoreFileParseError(filename, str(e))
+    if list_energies == ["all"]:
+        indices = range(1, len(tokens))
+	indices = [ i for i in indices if tokens[i] != "description" ]
+        headers = [ tokens[i] for i in indices ]
+    else:
+        #will throw ValueError if energy_name is not found
+        try:
+	    indices = [tokens.index(e_name) for e_name in list_energies]
+        except ValueError as e:
+            if list_energies[0] == "total_score":
+                list_energies[0] = "tot"
+                try:
+                    indices = [tokens.index(e_name) for e_name in list_energies]
+	        except ValueError as e:
+                    raise ScoreFileParseError(filename, str(e))
     
 
     try:                
         rmsd_ind = tokens.index(rmsd)
         desc_ind = tokens.index("description")
     except ValueError as e:
-        raise ScoreFileParseError(filename, str(e))
+	try:
+	    #hacky
+	    rmsd_ind = tokens.index("rms")
+            desc_ind = tokens.index("description")
+	except:
+            raise ScoreFileParseError(filename, str(e))
 
     ##temporary hacky thing to add elec14 to elec - elec MUST BE first in list of energies and first in weights, etc.
     if scoretype == "amber" and "elec" in list_energies:
@@ -63,15 +73,19 @@ def read_vals(filename, scoretype, repl_orig=False, rmsd=None, list_energies=Non
     else:
 	elec14_ind = None
  
-    if any(ind > len(line.split()) for ind in indices for line in lines):
+    if any(ind > len(line.split()) for ind in indices + [rmsd_ind] + [desc_ind] for line in lines):
         raise ScoreFileParseError(filename, "Broken lines exist") 
     
-    values_dict = extract_data(lines, rmsd_ind, desc_ind, indices, scoretype, weights, scales, offsets, elec14_ind=elec14_ind, trim=trim)
+    if list_energies == ["all"]: #this not tested with repl_orig
+        values_dict = extract_data_dict(lines, indices, desc_ind, scoretype, headers, trim=True)
+    else:
+        values_dict = extract_data(lines, rmsd_ind, desc_ind, indices, scoretype, weights, scales, offsets, elec14_ind=elec14_ind, trim=trim)
 
     if repl_orig:
         values_dict = replace_rmsd_orig(values_dict, filename)
 
     if len(values_dict.keys()) < 2:
+	print values_dict
         print "Warning: only one value present in {0}. Rejecting values_dict.".format(filename)
         values_dict = None
 
@@ -126,6 +140,7 @@ def extract_data(lines, rmsd_ind, desc_ind, indices, scoretype, weights=None, sc
     elif len(weights) != len(indices) != len(scales) != len(offsets):
     	error_str="Length of weights ({0}) and scales ({2}) and offsets ({3}) must be identical to length of energies({1})".format(len(weights),len(indices), len(scales), len(offsets))
         raise ValueError(error_str)
+    
     #try:
     if elec14_ind:
 	weights + [weights[0]]
@@ -141,13 +156,13 @@ def extract_data(lines, rmsd_ind, desc_ind, indices, scoretype, weights=None, sc
             for line in lines)
     elif scoretype == "amber":
         values_dict = dict((
-            line.split()[desc_ind][8:-5],
+            line.split()[desc_ind][8:-5].split('.')[0], #take off any remaining extension
             (sum(((float(line.split()[i]) / s + o) * w) for w,i,s,o in zip(weights,indices,scales,offsets)),
             float(line.split()[rmsd_ind])))
             for line in lines)
     else:
         values_dict = dict((
-            line.split()[desc_ind][0:-5],
+            line.split()[desc_ind][0:-5].split('.')[0], #take off any remaining extension
             (sum(((float(line.split()[i]) / s + o) * w) for w,i,s,o in zip(weights,indices,scales,offsets)),
             float(line.split()[rmsd_ind]))) 
             for line in lines)
@@ -155,6 +170,26 @@ def extract_data(lines, rmsd_ind, desc_ind, indices, scoretype, weights=None, sc
 #        raise ScoreFileParseError(filename, str(e))
 
     return values_dict
+
+def extract_data_dict(lines, indices, desc_ind, scoretype, header, trim=True):
+    """Extract data from lines into scores_dict of structure { filename : (rmsd, energy) }"""
+    values_dict = dict((
+            trim_decoy(line.split()[desc_ind], trim=trim, scoretype=scoretype),
+            { h : float(line.split()[i]) for h,i in zip(header,indices)})
+            for line in lines)
+    return values_dict
+
+def trim_decoy(decoy_name, trim=False, scoretype=""):
+    if not trim:
+        decoy_trim = decoy_name
+    elif trim and scoretype == "amber":
+        decoy_trim = decoy_name[8:-5].split('.')[0]
+    elif trim and scoretype == "rosetta":
+        decoy_trim = decoy_name[0:-5].split('.')[0]
+    else:
+        raise ValueError
+
+    return decoy_trim
 
 def find_score_files(path):
     """Simple method to find all score files in the current directory"""
@@ -179,9 +214,15 @@ def find_orig_score_file(pathname):
 
     return (pathname.replace(tail,to_rep)).replace(filename, to_repf)
 
-def scores_intersect(list_scores_dict):
+def scores_intersect(list_scores_dict, pdb=""):
     """Finds intersecting scores from each dict and returns two dicts composed only of intersection"""
     shared_scores = set.intersection(*(set(d.keys()) for d in list_scores_dict))
+ 
+    diff = shared_scores.symmetric_difference(set(list_scores_dict[1].keys()))	
+    if diff:
+    	print "{0},{1}".format(pdb, len(diff))
+        print diff
+    #print shared_scores.symmetric_difference(set(list_scores_dict[1].keys()))
 
     list_dicts_new = []
 
@@ -194,12 +235,11 @@ def pdbs_scores_intersect(list_pdbs_dict):
     """Finds intersecting pdbs from each dict and returns two dicts composed only of intersection.
     Only returns intersecting scores within each pdb"""
     shared_pdbs = set.intersection(*(set(d.keys()) for d in list_pdbs_dict))
-
     list_dicts_new = [{} for d in list_pdbs_dict]
- 
+    
     for pdb in shared_pdbs:
         list_scores_dict = [d[pdb]for d in list_pdbs_dict]
-        list_scores_dicts_new = scores_intersect(list_scores_dict)
+        list_scores_dicts_new = scores_intersect(list_scores_dict, pdb)
         
         for ind,d in enumerate(list_scores_dicts_new):
 	    list_dicts_new[ind][pdb]= d
@@ -252,7 +292,7 @@ def find_perc (scores_dict):
 def norm_vals (scores_dict, perc_low, perc_high):
 
     #normalize x
-    norm_scores_dict = dict((k, ((float(v[0]) - perc_low) / (perc_high - perc_low), v[1])) for k,v in scores_dict.items())
+    norm_scores_dict = dict((k, ((float(v[0]) - min(get_energies(scores_dict))) / (perc_high - perc_low), v[1])) for k,v in scores_dict.items())
 
     return norm_scores_dict
 
@@ -263,9 +303,9 @@ def filter_norm (scores_dict_1, low_also = True):
     else:
         low = -100.0
 
-    filtered_scores = dict(( k, (energy, rmsd)) for k, (energy, rmsd) in scores_dict_1.items() if energy < float(2.5)
+    filtered_scores = dict(( k, (energy, rmsd)) for k, (energy, rmsd) in scores_dict_1.items() if energy < float(100)
 								    and energy > low 
-							            and energy < float(2.5) 
+							            and energy < float(100) 
 								    and energy > low )
 
     return filtered_scores
@@ -331,6 +371,19 @@ def get_energies (scores_dict, sort_by=None):
         raise ValueError(error_str)    
     return energies
 
+def get_energies_dict (scores_dict, scoretype, sort_by=None):
+    if sort_by is None:
+        energies = [ e[scoretype] for k,e in sorted(scores_dict.items()) ]
+    #untested
+    elif sort_by == "energy":
+        energies = [ e[scoretype] for e in sorted(scores_dict.values(), key=lambda x: x[0]) ]
+    elif sort_by == "rmsd":
+        energies = [ e[scoretype] for e in sorted(scores_dict.values(), key=lambda x: x["rmsd"]) ]
+    else:
+        error_str="sort_by must be either energy or rmsd, not " + sort_by
+        raise ValueError(error_str)
+    return energies
+
 def get_rmsd (scores_dict, sort_by=None):
     if sort_by is None:
         rmsd = [ e[1] for k,e in sorted(scores_dict.items()) ]
@@ -381,3 +434,12 @@ def write_scores_dict_score_file(scores_dict, score_file_name):
         sf.write("SCORE: rms score\n")
         for k,(energy,rmsd) in scores_dict.items():
             sf.write("SCORE: {0} {1}\n".format(rmsd, energy))
+
+
+def gen_ranks(list_energies, reverse=False):
+    indices = list(range(len(list_energies)))
+    indices.sort(key=lambda x: list_energies[x], reverse=reverse)
+    output = [0] * len(indices)
+    for i, x in enumerate(indices):
+        output[x] = i
+    return output

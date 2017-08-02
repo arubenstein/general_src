@@ -6,12 +6,15 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import FormatStrFormatter
 import numpy as np
 
-def draw_actual_plot(ax, values, title, x_axis, log=False, normed=True, label=None, nbins=10, stacked=False):
-    colors = ('cyan', 'black', 'crimson', 'darkorchid', 'green', 'gold', 'yellow', 'greenyellow',
+def draw_actual_plot(ax, values, title, x_axis, log=False, normed=True, label=None, nbins=10, stacked=False, edgecolor=None, colors="", no_y_axis=False):
+    if len(colors) == 0:
+        colors = ('lightskyblue', 'black', 'tomato', 'darkorchid', 'green', 'gold', 'yellow', 'greenyellow',
                 'aquamarine', 'teal', 'cyan', 'darkblue', 'slateblue', 'darkorchid',
                 'deeppink', 'crimson')
     if len(values) > 1:
-        counts, bins, patches = ax.hist(values, nbins, normed=normed,color=colors[0:len(label)], log=log,alpha=0.75, label=label, stacked=stacked)
+	col = colors[0:len(label)] if label else colors[0]
+	print col
+        counts, bins, patches = ax.hist(values, nbins, normed=normed,color=col, log=log,alpha=0.75, label=label, stacked=stacked, linewidth=0)
     else:
         ax.text(0.5,0.5,"Only one data point in dataset",
             horizontalalignment='center',
@@ -19,19 +22,21 @@ def draw_actual_plot(ax, values, title, x_axis, log=False, normed=True, label=No
             fontsize=10, color='green',
             transform=ax.transAxes)
 
-    y_axis = "Counts" if not normed else "Probability"
-    y_axis_suff = " (log)" if log else ""
-    y_axis = y_axis + y_axis_suff
-
-    ax.set_xlabel(x_axis)
-    ax.set_ylabel(y_axis)
+    if not no_y_axis:
+        y_axis = "Counts" if not normed else "Normalized Frequency"
+        y_axis_suff = " (log)" if log else ""
+        y_axis = y_axis + y_axis_suff
+        y_axis = "Normalized\nFrequency (log)" if y_axis == "Normalized Frequency (log)" else y_axis
+        ax.set_ylabel(y_axis, fontweight='bold')
+    
+    ax.set_xlabel(x_axis, fontweight='bold')
     ax.set_title(title)
 
     # Set the ticks to be at the edges of the bins.
     #ax.set_xticks(bins)
     # Set the xaxis's tick labels to be formatted with 1 decimal place...
     #ax.xaxis.set_major_formatter(FormatStrFormatter('%0.1f'))
-    [label.set_visible(True) for label in ax.get_xticklabels()]
+    #[label.set_visible(True) for label in ax.get_xticklabels()]
     # Change the colors of bars at the edges...
     #twentyfifth, seventyfifth = np.percentile(values, [25, 75])
     #for patch, rightside, leftside in zip(patches, bins[1:], bins[:-1]):

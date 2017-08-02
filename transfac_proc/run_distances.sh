@@ -22,6 +22,10 @@ do
 		gld_std_path=$gld_std_path'3M5L.transfac'
                 gld_std_cld=$gld_std_lists'list3M5Lcleaved.txt'
                 gld_std_ucld=$gld_std_lists'list3M5Luncleaved.txt'	
+        elif [[ $i == *3KF2*.transfac ]];then
+                gld_std_path=$gld_std_path'3KF2.transfac'
+                gld_std_cld=$gld_std_lists'list3KF2cleaved.txt'
+                gld_std_ucld=$gld_std_lists'list3KF2uncleaved.txt'
         elif [[ $i == *GraB*.transfac ]];then
 		gld_std_path=$gld_std_path'GraB.transfac'
                 gld_std_cld=$gld_std_lists'listGraBcleaved.txt'
@@ -34,6 +38,14 @@ do
                 gld_std_path=$gld_std_path'HIVn.transfac'
                 gld_std_cld=$gld_std_lists'listHIVncleaved.txt'
                 gld_std_ucld=$gld_std_lists'listHIVnuncleaved.txt'
+        elif [[ $i == *2HB4*.transfac ]];then
+                gld_std_path=$gld_std_path'2HB4.transfac'
+                gld_std_cld=$gld_std_lists'list2HB4cleaved.txt'
+                gld_std_ucld=$gld_std_lists'list2HB4uncleaved.txt'
+        elif [[ $i == *2PC0*.transfac ]];then
+                gld_std_path=$gld_std_path'2PC0.transfac'
+                gld_std_cld=$gld_std_lists'list2PC0cleaved.txt'
+                gld_std_ucld=$gld_std_lists'list2PC0uncleaved.txt'
         elif [[ $i == *3AYU*.transfac ]];then
                 gld_std_path=$gld_std_path'3AYU.transfac'
                 gld_std_cld=$gld_std_lists'list3AYUcleaved.txt'
@@ -54,10 +66,46 @@ do
                 gld_std_path=$gld_std_path'1SPS.transfac'
                 gld_std_cld=$gld_std_lists'list1SPScleaved.txt'
 #                gld_std_ucld=$gld_std_lists'list1SPSuncleaved.txt'
-        elif [[ $i == *2he4*.transfac ]];then
+        elif [[ $i == *2HE4*.transfac ]];then
                 gld_std_path=$gld_std_path'2he4.transfac'
                 gld_std_cld=$gld_std_lists'list2he4cleaved.txt'
-                gld_std_ucld=$gld_std_lists'list2he4uncleaved.txt'
+#                gld_std_ucld=$gld_std_lists'list2he4uncleaved.txt'
+        elif [[ $i == *1N7T*.transfac ]];then
+                gld_std_path=$gld_std_path'1N7T.transfac'
+                gld_std_cld=$gld_std_lists'list1N7Tcleaved.txt'
+#                gld_std_ucld=$gld_std_lists'list1N7Tuncleaved.txt'
+        elif [[ $i == *2AIN*.transfac ]];then
+                gld_std_path=$gld_std_path'2AIN.transfac'
+                gld_std_cld=$gld_std_lists'list2AINcleaved.txt'
+#                gld_std_ucld=$gld_std_lists'list2AINuncleaved.txt'
+        elif [[ $i == *2FNE*.transfac ]];then
+                gld_std_path=$gld_std_path'2FNE.transfac'
+                gld_std_cld=$gld_std_lists'list2FNEcleaved.txt'
+#                gld_std_ucld=$gld_std_lists'list1SPSuncleaved.txt'
+        elif [[ $i == *2H2B*.transfac ]];then
+                gld_std_path=$gld_std_path'2H2B.transfac'
+                gld_std_cld=$gld_std_lists'list2H2Bcleaved.txt'
+#                gld_std_ucld=$gld_std_lists'list2H2Buncleaved.txt'
+        elif [[ $i == *2I0L*.transfac ]];then
+                gld_std_path=$gld_std_path'2I0L.transfac'
+                gld_std_cld=$gld_std_lists'list2I0Lcleaved.txt'
+#                gld_std_ucld=$gld_std_lists'list2I0Luncleaved.txt'
+        elif [[ $i == *1M6O*.transfac ]];then
+                gld_std_path=$gld_std_path'1M6O.transfac'
+                gld_std_cld=$gld_std_lists'list1M6Ocleaved.txt'
+#                gld_std_ucld=$gld_std_lists'list1M6Ouncleaved.txt'
+        elif [[ $i == *1N2R*.transfac ]];then
+                gld_std_path=$gld_std_path'1N2R.transfac'
+                gld_std_cld=$gld_std_lists'list1N2Rcleaved.txt'
+#                gld_std_ucld=$gld_std_lists'list1N2Runcleaved.txt'
+        elif [[ $i == *1QSF*.transfac ]];then
+                gld_std_path=$gld_std_path'1QSF.transfac'
+                gld_std_cld=$gld_std_lists'list1QSFcleaved.txt'
+#                gld_std_ucld=$gld_std_lists'list1QSFuncleaved.txt'
+        elif [[ $i == *1XR9*.transfac ]];then
+                gld_std_path=$gld_std_path'1XR9.transfac'
+                gld_std_cld=$gld_std_lists'list1XR9cleaved.txt'
+#                gld_std_ucld=$gld_std_lists'list1XR9uncleaved.txt'
         else
 		gld_std_path=""
 	fi

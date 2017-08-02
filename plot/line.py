@@ -4,7 +4,7 @@
 import conv
 import matplotlib.pyplot as plt
 
-def plot_series(ax, lines, title, x_axis, y_axis, marker='o', linestyle='-', legend=True): 
+def plot_series(ax, lines, title, x_axis, y_axis, marker='o', linestyle='-', legend=True, colors=None): 
     ax.set_title(title)
 
     ax.set_xlabel(x_axis)
@@ -12,7 +12,8 @@ def plot_series(ax, lines, title, x_axis, y_axis, marker='o', linestyle='-', leg
 
     #not in use currently
     patterns = ('>', 'o', 'D', '*', '^','s')
-    colors = ('cyan', 'orange', 'greenyellow', 'steelblue', 'crimson', 'gold', 'yellow', 'greenyellow',
+    if not colors:
+        colors = ('cyan', 'orange', 'greenyellow', 'steelblue', 'crimson', 'gold', 'yellow', 'greenyellow',
 		'aquamarine', 'teal', 'cyan', 'steelblue', 'darkblue', 'slateblue', 'darkorchid',
 		'deeppink', 'crimson') 
     for (x,y,label), color in zip(lines, colors):

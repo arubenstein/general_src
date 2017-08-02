@@ -5,9 +5,10 @@ import conv
 import scipy.stats as stats
 import numpy as np
 import matplotlib.pyplot as plt
+from adjustText import adjust_text
 #from pylab import *
 
-def plot_series(ax, lines, title, x_axis, y_axis, colors=None,size=10, connect_dots=False, alpha=0.3, edgecolors=None):
+def plot_series(ax, lines, title, x_axis, y_axis, colors=None,size=10, connect_dots=False, alpha=0.3, edgecolors=None, linewidth=1):
 
     #not in use currently
     patterns = ('>', 'o', 'D', '*', '^','s')
@@ -16,11 +17,11 @@ def plot_series(ax, lines, title, x_axis, y_axis, colors=None,size=10, connect_d
                 'aquamarine', 'teal', 'cyan', 'steelblue', 'darkblue', 'slateblue', 'darkorchid',
                 'deeppink', 'crimson')    
     for (x,y,label), color in zip(lines, colors):
-        draw_actual_plot(ax, x, y, color, title, x_axis, y_axis, label=label, size=size, connect_dots=connect_dots, alpha=alpha, edgecolors=edgecolors)
+        draw_actual_plot(ax, x, y, color, title, x_axis, y_axis, label=label, size=size, connect_dots=connect_dots, alpha=alpha, edgecolors=edgecolors, linewidth=linewidth)
 
-    conv.add_legend(ax)
+    #conv.add_legend(ax)
 
-def draw_actual_plot(ax, x, y, r, title, x_axis, y_axis, cm="Blues_r", size=10, edgecolors="None", label=None, secondary_y=False, connect_dots=False, alpha=0.3):
+def draw_actual_plot(ax, x, y, r, title, x_axis, y_axis, cm="Blues_r", size=10, edgecolors="None", label=None, secondary_y=False, connect_dots=False, alpha=0.3, linewidth=1):
 
     if secondary_y:
 
@@ -30,22 +31,24 @@ def draw_actual_plot(ax, x, y, r, title, x_axis, y_axis, cm="Blues_r", size=10, 
 
     if len(r)>1:
         #plot scatter plot
-        s = ax.scatter(x, y, c=r, alpha=alpha,s=size, cmap=cm, edgecolors=edgecolors, lw = 1, label=label)
+        s = ax.scatter(x, y, c=r, alpha=alpha,s=size, cmap=cm, edgecolors=edgecolors, lw = linewidth, label=label)
     else:
-        s = ax.scatter(x, y, c=r, alpha=1.0,s=size, edgecolors=edgecolors, lw = 1, label=label)
+        s = ax.scatter(x, y, c=r, alpha=1.0,s=size, edgecolors=edgecolors, lw = linewidth, label=label)
 
-    if connect_dots:
+    if connect_dots and isinstance(r, basestring):
+        ax.plot(x, y, c=r)
+    elif connect_dots:
         ax.plot(x, y, c='k')
-    ax.set_title(title)
+    ax.set_title(title, fontweight='bold')
 
+    ax.set_xlabel(x_axis, fontweight='bold')
 
-    ax.set_xlabel(x_axis)
     if secondary_y: #not completely true, should have another setting to show that will beplotting secondary plot
         ylabel_col = r
     else:
         ylabel_col = 'k'
 
-    ax.set_ylabel(y_axis, color=ylabel_col)
+    ax.set_ylabel(y_axis, color=ylabel_col, fontweight='bold')
 
     for tk in ax.get_yticklabels():
         tk.set_visible(True)
@@ -86,7 +89,7 @@ def find_xy_regression(x, y, neg=False):
 
     return y_model, r_2
 
-def plot_regression(ax, x, y, fit=False, neg=False):
+def plot_regression(ax, x, y, fit=False, neg=False, label_corr=False, labels=None, plot_PI=True):
 
     if fit == True:
         y_model, r_2 = find_fit_regression(x, y)
@@ -108,8 +111,11 @@ def plot_regression(ax, x, y, fit=False, neg=False):
     #chi2_red = chi2/(DF)                          # reduced chi-squared; measures goodness of fit
     s_err = np.sqrt(np.sum(resid**2)/(DF))        # standard deviation of the error
 
-    # Fit
-    ax.plot(x,y_model,'-', color='0.1', linewidth='2', alpha=0.5, label='x=y')
+    label_fit = "x=y" if fit==False else "best fit"
+
+    if plot_PI:
+        # Fit
+        ax.plot(x,y_model,'-', color='0.1', linewidth='2', alpha=0.5, label=label_fit)
 
     x2 = np.linspace(np.min(x), np.max(x), 100)
     if neg:
@@ -126,12 +132,17 @@ def plot_regression(ax, x, y, fit=False, neg=False):
 
     # Prediction Interval
     PI = t*s_err*np.sqrt(1+1/n+(x2-np.mean(x))**2/np.sum((x-np.mean(x))**2))
-    ax.fill_between(x2, y2+PI, y2-PI, color='None', linestyle='--')
-    ax.plot(x2, y2-PI, '--', color='0.5', label='95% Prediction Limits')
-    ax.plot(x2, y2+PI, '--', color='0.5')
+    if plot_PI:
+        ax.fill_between(x2, y2+PI, y2-PI, color='None', linestyle='--')
+        ax.plot(x2, y2-PI, '--', color='0.5', label='95% Prediction Limits')
+        ax.plot(x2, y2+PI, '--', color='0.5')
 
-    # Annotate plot with R^2
-    conv.add_text(ax, "C", r_2)
+    if label_corr:
+        # Annotate plot with R^2 
+        conv.add_text(ax, "C", r_2)
+    np.set_printoptions(suppress=True)
+    if labels:
+        label_outliers(ax, x, y, x2, y2-PI, y2+PI, labels)
 
 def add_x_y_line(ax, min_val=None, max_val=None, neg=False):
     if min_val is not None and max_val is not None:
@@ -149,3 +160,18 @@ def add_x_y_line(ax, min_val=None, max_val=None, neg=False):
         lims2 = lims
     # now plot both limits against eachother
     ax.plot(lims, lims, 'k-', alpha=0.75, zorder=0)
+
+def label_outliers(ax, x, y, x_lim, y_bottom_lim, y_top_lim, labels):
+
+    texts = []    
+
+    for x_val, y_val, label in zip(x, y, labels):
+        for i,value in enumerate(x_lim):
+	    if x_val <= value:
+                ind = i - 1 if i > 0 else 0
+		if y_val < y_bottom_lim[ind] or y_val > y_top_lim[ind]:
+		    #conv.annotate_point(ax, x_val, y_val, label)
+		    texts.append(conv.add_text_adjust(ax, x_val, y_val, label, size=7))
+		break
+
+    #adjust_text(texts)
