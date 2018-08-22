@@ -118,6 +118,7 @@ def plot_regression(ax, x, y, fit=False, neg=False, label_corr=False, labels=Non
         ax.plot(x,y_model,'-', color='0.1', linewidth='2', alpha=0.5, label=label_fit)
 
     x2 = np.linspace(np.min(x), np.max(x), 100)
+
     if neg:
         y2 = np.linspace(np.max(y_model), np.min(y_model), 100)
     else:
@@ -133,16 +134,21 @@ def plot_regression(ax, x, y, fit=False, neg=False, label_corr=False, labels=Non
     # Prediction Interval
     PI = t*s_err*np.sqrt(1+1/n+(x2-np.mean(x))**2/np.sum((x-np.mean(x))**2))
     if plot_PI:
-        ax.fill_between(x2, y2+PI, y2-PI, color='None', linestyle='--')
+        #ax.fill_between(x2, y2+PI, y2-PI, color='None', linestyle='--')
+        ax.fill_between(x2, y2+0.2, y2-0.2, color='None', linestyle='--')
         ax.plot(x2, y2-PI, '--', color='0.5', label='95% Prediction Limits')
         ax.plot(x2, y2+PI, '--', color='0.5')
 
     if label_corr:
         # Annotate plot with R^2 
         conv.add_text(ax, "C", r_2)
+    else:
+	print r_2
     np.set_printoptions(suppress=True)
     if labels:
         label_outliers(ax, x, y, x2, y2-PI, y2+PI, labels)
+
+    return r_2
 
 def add_x_y_line(ax, min_val=None, max_val=None, neg=False):
     if min_val is not None and max_val is not None:
@@ -171,7 +177,7 @@ def label_outliers(ax, x, y, x_lim, y_bottom_lim, y_top_lim, labels):
                 ind = i - 1 if i > 0 else 0
 		if y_val < y_bottom_lim[ind] or y_val > y_top_lim[ind]:
 		    #conv.annotate_point(ax, x_val, y_val, label)
-		    texts.append(conv.add_text_adjust(ax, x_val, y_val, label, size=7))
+		    texts.append(conv.add_text_adjust(ax, x_val, y_val, label, size=6, rotation=90))
 		break
 
     #adjust_text(texts)
