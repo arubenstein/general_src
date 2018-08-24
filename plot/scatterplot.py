@@ -137,9 +137,9 @@ def plot_regression(ax, x, y, fit=False, neg=False, label_corr=False, labels=Non
         #ax.fill_between(x2, y2+PI, y2-PI, color='None', linestyle='--')
         #ax.plot(x2, y2-PI, '--', color='0.5', label='95% Prediction Limits')
         #ax.plot(x2, y2+PI, '--', color='0.5')
-        ax.fill_between(x2, y2+0.2, y2-0.2, color='None', linestyle='--')
-        ax.plot(x2, y2-0.2, '--', color='0.5', label='95% Prediction Limits')
-        ax.plot(x2, y2+0.2, '--', color='0.5')
+        ax.fill_between(x2, y2+0.1, y2-0.1, color='None', linestyle='--')
+        ax.plot(x2, y2-0.1, '--', color='0.5', label='95% Prediction Limits')
+        ax.plot(x2, y2+0.1, '--', color='0.5')
 
     if label_corr:
         # Annotate plot with R^2 
@@ -149,7 +149,7 @@ def plot_regression(ax, x, y, fit=False, neg=False, label_corr=False, labels=Non
     np.set_printoptions(suppress=True)
     if labels:
         #label_outliers(ax, x, y, x2, y2-PI, y2+PI, labels)
-        label_outliers(ax, x, y, x2, y2-0.2, y2+0.2, labels)
+        label_outliers(ax, x, y, x2, y2-0.1, y2+0.1, labels)
 
     return r_2
 
